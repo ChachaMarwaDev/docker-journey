@@ -16,9 +16,10 @@ import click
 @click.option('--pg-db', default='ny_taxi', help='PostgreSQL database name')
 @click.option('--target-table', default='green_trip_data', help='Target table name')
 @click.option('--month', default='2025_11', help='Month format(YEAR_MONTH)')
-def run(pg_user, pg_pass, pg_host, pg_port, pg_db, target_table, month):
+@click.option('--data-dir', default='data', help='Directory containing the parquet files')
+def run(pg_user, pg_pass, pg_host, pg_port, pg_db, target_table, month, data_dir):
     # Construct the file path with the month parameter
-    trip_path = f"data/green_tripdata_{month}.parquet"
+    trip_path = f"{data_dir}/green_tripdata_{month}.parquet"
     
     print(f"Loading data from: {trip_path}")
     
