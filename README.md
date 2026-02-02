@@ -3,7 +3,8 @@ A structured, hands-on journey learning Docker fundamentals through notes, examp
 
 The pipeline directory entails all the work from week one
 
-## Week 1 Directory: Pipeline
+<details>
+<summary><b>Week 1 folder: Pipeline</b></summary>
 
 This section documents the commands used to set up the data pipeline infrastructure and ingest NYC taxi data.
 
