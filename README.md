@@ -1,9 +1,11 @@
 # docker-journey
+
 A structured, hands-on journey learning Docker fundamentals through notes, examples, and practice from DE zoomcamp
 
 The pipeline directory entails all the work from week one
 
-## Week 1 Directory: Pipeline
+<details>
+<summary><b>Week 1 folder: Pipeline</b></summary>
 
 This section documents the commands used to set up the data pipeline infrastructure and ingest NYC taxi data.
 
@@ -124,3 +126,6 @@ docker run -it --rm \
 - **Custom Image:** `taxi_ingest:v001` is a pre-built image containing data ingestion scripts
 
 This pipeline establishes a complete ETL environment for NYC taxi data analytics, with database, management interface, and data loading capabilities.
+
+<details>
+<summary><b>Week 2 folder: 02_workflow_orchestration</b></summary>
