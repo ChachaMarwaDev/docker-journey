@@ -1,0 +1,21 @@
+taxi_rides_ny:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: /workspace/taxi_rides_ny.duckdb  # Point to your existing DB
+      schema: dev
+      threads: 4
+      extensions:
+        - parquet
+      settings:
+        memory_limit: '2GB'
+    prod:
+      type: duckdb
+      path: /workspace/taxi_rides_ny.duckdb
+      schema: prod
+      threads: 4
+      extensions:
+        - parquet
+      settings:
+        memory_limit: '2GB'
