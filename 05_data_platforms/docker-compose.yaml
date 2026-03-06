@@ -1,0 +1,86 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: bruin-postgres
+    environment:
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+      - POSTGRES_DB=ny_taxi
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+      - ./data:/data
+    networks:
+      - bruin-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U root -d ny_taxi"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  bruin:
+    build: .
+    container_name: bruin-worker
+    image: bruin-project:latest
+    ports:
+      - "8888:8888"  # For Jupyter if needed
+    volumes:
+      - ./:/workspace
+      - ./data:/data
+    environment:
+      - PG_HOST=postgres
+      - PG_USER=root
+      - PG_PASSWORD=root
+      - PG_DATABASE=ny_taxi
+      - PG_PORT=5432
+    networks:
+      - bruin-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: tail -f /dev/null  # Keeps container running
+    # Alternative command if you want Jupyter:
+    # command: jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root
+
+networks:
+  bruin-network:
+    driver: bridge
+
+# services:
+#   pgdatabase:
+#     image: postgres:18
+#     container_name: pgdatabase
+#     environment:
+#       POSTGRES_USER: root
+#       POSTGRES_PASSWORD: root
+#       POSTGRES_DB: ny_taxi
+#     volumes:
+#       - ny_taxi_postgres_data:/var/lib/postgresql
+#     ports:
+#       - "5432:5432"
+#     networks:
+#       - pg-network
+
+#   pgadmin:
+#     image: dpage/pgadmin4
+#     container_name: pgadmin
+#     environment:
+#       PGADMIN_DEFAULT_EMAIL: admin@admin.com
+#       PGADMIN_DEFAULT_PASSWORD: root
+#     volumes:
+#       - pgadmin_data:/var/lib/pgadmin
+#     ports:
+#       - "8085:80"
+#     depends_on:
+#       - pgdatabase
+#     networks:
+#       - pg-network
+
+# volumes:
+#   ny_taxi_postgres_data:
+#   pgadmin_data:
+
+# networks:
+#   pg-network:
+#     driver: bridge
