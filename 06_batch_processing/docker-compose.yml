@@ -1,0 +1,13 @@
+# version: '3.8' # Keep the version compatible with your Docker Compose installation
+
+services:
+  spark:
+    build: ./setup
+    container_name: spark-course
+    volumes:
+      - .:/workspace
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    # Keep the container running for IDE connection
+    # command: ["-c", "tail -f /dev/null"] # keeps the container running without doing anything but makes Bash interprets tail -f /dev/null as a script name to run, which doesn't work, so it exits immediately. We can use the default entry point (which is /bin/bash) and just start an interactive shell, which will keep the container running and allow us to connect to it with our IDE.
