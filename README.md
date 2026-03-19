@@ -129,3 +129,10 @@ This pipeline establishes a complete ETL environment for NYC taxi data analytics
 
 <details>
 <summary><b>Week 2 folder: 02_workflow_orchestration</b></summary>
+
+<details>
+<summary><b>Week 5 folder: Pipeline</b></summary>
+
+## Requirements
+1. Bruin extension by Bruin
+2. Install bruin through CLI: `curl -LsSf https://getbruin.com/install/cli | sh` and checking the version `bruin version`
