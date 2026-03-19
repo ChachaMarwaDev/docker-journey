@@ -1,32 +1,54 @@
-# Setting up
-    1. Setting up docker file
-    2. Setting up the docker-compose.yaml
-    3. Writing a test_script.py to see if everythin is working correctly
+# Docker Setup Guide
 
-## Activating the setup
-    1. Changing into the code directory
-    2. Make the local docker app active
-    2. Running docker commands;
-        i. `docker-compose up -d` - build and start the container
-        ii. `docker-compose ps` - to check if container is running
-        iii. `docker-compose exec spark python test_spark.py` - test python with spark
+## Setup Steps
 
+1. Create the `Dockerfile`
+2. Create the `docker-compose.yaml`
+3. Write `test_script.py` to verify everything is working correctly
 
+## Activating the Setup
 
+1. Change into the code directory
+2. Start the local Docker app
+3. Run the following Docker commands:
 
-# Errors encountered during docker configuration
-## What were the errors
-    a. level=warning msg="C:\\dev\\docker-journey\\06_batch_processing\\docker-compose.yml: the attribute `version` is obsolete, it will be ignored, please remove it to avoid potential confusion"
-    b. failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+| Command | Description |
+|---|---|
+| `docker-compose up -d` | Build and start the container |
+| `docker-compose ps` | Check if the container is running |
+| `docker-compose exec spark python test_spark.py` | Test Python with Spark |
 
-## Why do we get the error
-    a. This warning appears because you're using a recent version of Docker Compose (V2) which has moved to the Compose Specification format. The version field is no longer needed and is now considered obsolete.
-    b. build . in the docker-compose is looking for dockerfile in the current directory where the docker-compose is located
+---
 
-## How I solved them according to their listing
-    a. Keep it commented for reference
-    b. I updated the build context to point to directory containing the dockerfile
+## Errors Encountered During Docker Configuration
 
+### 1. Obsolete `version` attribute warning
 
-### I forgot
-    1. consistency in my dockerfile and docker-compose.yml where one has /app and the other /workspace
+**Error:**
+```
+level=warning msg="docker-compose.yml: the attribute `version` is obsolete,
+it will be ignored, please remove it to avoid potential confusion"
+```
+
+**Cause:** Recent versions of Docker Compose (V2) have moved to the Compose Specification format, making the `version` field obsolete.
+
+**Fix:** Comment out the `version` field — kept for reference.
+
+---
+
+### 2. Dockerfile not found
+
+**Error:**
+```
+failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
+```
+
+**Cause:** `build: .` in `docker-compose.yml` looks for a `Dockerfile` in the same directory as the compose file.
+
+**Fix:** Updated the build context to point to the directory containing the `Dockerfile`.
+
+---
+
+## Lessons Learned
+
+> **Consistency matters** — make sure the working directory is the same across your `Dockerfile` and `docker-compose.yml`. Mixing `/app` in one and `/workspace` in the other will cause issues.
