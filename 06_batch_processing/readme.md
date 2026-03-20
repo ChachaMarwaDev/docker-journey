@@ -17,9 +17,57 @@
 | `docker-compose up -d` | Build and start the container |
 | `docker-compose ps` | Check if the container is running |
 | `docker-compose exec spark python test_spark.py` | Test Python with Spark |
+| `docker-compose exec spark /bin/bash` | Overrides python entrypoint on docker to bash|
+| `docker-compose run --rm spark python your_homework_script.py` | From the host machine (windows) |
+| `python your_homework_script.py` | From inside bash |
+| `docker-compose down` | To stop the container |
+| `jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root` | Once in bash, to start jupyter |
+| `docker-compose run --rm -p 8888:8888 spark` | Start juypter with port mapping |
 
 ---
 
+> Since we are using juypter to run pyspark commands 
+
+In docker-compose I have defined three services:
+*Spark service*
+    ```powershell
+    # Start the spark service in background
+    docker-compose up -d spark
+
+    # Get into bash
+    docker-compose exec spark bash
+
+    # Run your scripts
+    python test_spark.py
+
+    # When done
+    docker-compose down
+    ```
+
+*Jupyter service*
+   ```powershell
+    # Start Jupyter directly
+    docker-compose up jupyter
+
+    # Or run in background
+    docker-compose up -d jupyter
+
+    # Access at http://localhost:8888
+
+    # Stop when done
+    docker-compose down
+   ```
+*Spark shell (REPL)*
+    ```powershell 
+    # Start Python interactive shell
+    docker-compose up spark-shell
+
+    # You'll get a Python REPL where you can:
+    # >>> from pyspark.sql import SparkSession
+    # >>> spark = SparkSession.builder.master("local[*]").appName('test').getOrCreate()
+    # >>> df = spark.range(10)
+    # >>> df.show()
+    ```
 ## Errors Encountered During Docker Configuration
 
 ### 1. Obsolete `version` attribute warning
