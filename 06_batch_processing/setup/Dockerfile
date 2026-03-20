@@ -29,9 +29,8 @@ RUN python3 -m venv /venv
 ENV PATH="/venv/bin:$PATH"
 
 # Initialize uv project and install pyspark in the virtual environment
-RUN uv init && \
-    /venv/bin/pip install --upgrade pip && \
-    /venv/bin/pip install pyspark jupyter ipykernel
+RUN uv pip install --upgrade pip && \
+    uv pip install pyspark jupyter ipykernel pandas
 
 # Create app directory
 WORKDIR /workspace
