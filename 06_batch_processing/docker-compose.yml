@@ -11,15 +11,16 @@ services:
   # ---------------------------------------------------------
   spark:
     platform: linux/amd64
+    image: batch-processing:latest    # Shared image — built once, used by both services
     build:
-      context: .               # Project root = 06_batch_processing/
-      dockerfile: setup/Dockerfile
+      context: .                      # Project root = 06_batch_processing/
+      dockerfile: setup/Dockerfile    # Only spark triggers the build
     container_name: spark-course
     volumes:
-      - ./code:/workspace/code  # Your local code/ folder → inside container
+      - ./code:/workspace/code        # Your local code/ folder → inside container
     working_dir: /workspace/code
     ports:
-      - "4040:4040"             # Spark Web UI (view running jobs)
+      - "4040:4040"                   # Spark Web UI (view running jobs)
     environment:
       - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
     stdin_open: true
@@ -33,16 +34,14 @@ services:
   # ---------------------------------------------------------
   jupyter:
     platform: linux/amd64
-    build:
-      context: .
-      dockerfile: setup/Dockerfile
+    image: batch-processing:latest    # Reuses the same image — no build block needed
     container_name: jupyter-course
     volumes:
       - ./code:/workspace/code
     working_dir: /workspace/code
     ports:
-      - "8888:8888"             # Jupyter Notebook in browser
-      - "4041:4040"             # Spark UI for jupyter (different port to avoid conflict)
+      - "8888:8888"                   # Jupyter Notebook in browser
+      - "4041:4040"                   # Spark UI for jupyter (different port to avoid conflict)
     environment:
       - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
     command: bash -c "/opt/venv/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password='' --notebook-dir=/workspace/code"
