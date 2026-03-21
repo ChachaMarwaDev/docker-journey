@@ -1,0 +1,21 @@
+{
+    "name": "Spark Course",
+    "dockerComposeFile": "../docker-compose.yml",
+    "service": "spark",
+    "workspaceFolder": "/workspace/code",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+    "settings": {
+        "python.defaultInterpreterPath": "/opt/venv/bin/python",
+        "python.terminal.activateEnvironment": true,
+        "python.terminal.activateEnvInCurrentTerminal": true
+    },
+    "remoteUser": "root",
+    "postCreateCommand": "echo '✅ DevContainer ready! Python at: /opt/venv/bin/python'"
+}

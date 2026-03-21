@@ -23,6 +23,7 @@
 | `docker-compose down` | To stop the container |
 | `jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root` | Once in bash, to start jupyter |
 | `docker-compose run --rm -p 8888:8888 spark` | Start juypter with port mapping |
+| `docker-compose down` | Stop everything when done for the day |
 
 ---
 

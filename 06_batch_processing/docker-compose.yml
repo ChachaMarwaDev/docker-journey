@@ -1,13 +1,60 @@
-# version: '3.8' # Keep the version compatible with your Docker Compose installation
+# ============================================================
+# Spark Course - docker-compose.yml
+# Place this file at: 06_batch_processing/docker-compose.yml
+# ============================================================
 
 services:
+
+  # ---------------------------------------------------------
+  # SPARK service: This is what VS Code / DevContainer uses.
+  # You write and run your Python/Spark code here.
+  # ---------------------------------------------------------
   spark:
-    build: ./setup
+    platform: linux/amd64
+    build:
+      context: .               # Project root = 06_batch_processing/
+      dockerfile: setup/Dockerfile
     container_name: spark-course
     volumes:
-      - .:/workspace
-    working_dir: /workspace
+      - ./code:/workspace/code  # Your local code/ folder → inside container
+    working_dir: /workspace/code
+    ports:
+      - "4040:4040"             # Spark Web UI (view running jobs)
+    environment:
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
     stdin_open: true
     tty: true
-    # Keep the container running for IDE connection
-    # command: ["-c", "tail -f /dev/null"] # keeps the container running without doing anything but makes Bash interprets tail -f /dev/null as a script name to run, which doesn't work, so it exits immediately. We can use the default entry point (which is /bin/bash) and just start an interactive shell, which will keep the container running and allow us to connect to it with our IDE.
+    command: ["tail", "-f", "/dev/null"]
+
+  # ---------------------------------------------------------
+  # JUPYTER service: Optional. Opens a notebook in your browser.
+  # Visit http://localhost:8888 after running:
+  #   docker compose up jupyter
+  # ---------------------------------------------------------
+  jupyter:
+    platform: linux/amd64
+    build:
+      context: .
+      dockerfile: setup/Dockerfile
+    container_name: jupyter-course
+    volumes:
+      - ./code:/workspace/code
+    working_dir: /workspace/code
+    ports:
+      - "8888:8888"             # Jupyter Notebook in browser
+      - "4041:4040"             # Spark UI for jupyter (different port to avoid conflict)
+    environment:
+      - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+    command: >
+      bash -c "
+        /opt/venv/bin/jupyter notebook
+          --ip=0.0.0.0
+          --port=8888
+          --no-browser
+          --allow-root
+          --NotebookApp.token=''
+          --NotebookApp.password=''
+          --notebook-dir=/workspace/code
+      "
+    depends_on:
+      - spark
