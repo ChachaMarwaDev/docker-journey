@@ -1,0 +1,32 @@
+# ── Jupyter ────────────────────────────────────────────────
+# Auto-generated checkpoint files — never commit these
+.ipynb_checkpoints/
+*-checkpoint.ipynb
+*-checkpoint.py
+
+# ── Spark Output ────────────────────────────────────────────
+# Folders written by df.write.parquet() or df.write.csv()
+# These are generated data, not source code
+zones/
+output/
+spark-output/
+
+# Spark internal files written alongside output data
+_SUCCESS
+*.crc
+.*.crc
+
+# ── Large Data Files ─────────────────────────────────────────
+# Raw data files — too large for Git (use GCS/S3/Drive instead)
+*.parquet
+*.csv
+
+# ── Python ───────────────────────────────────────────────────
+__pycache__/
+*.pyc
+*.pyo
+.Python
+
+# ── Environment ──────────────────────────────────────────────
+.env
+*.log

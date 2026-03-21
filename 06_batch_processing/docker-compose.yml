@@ -45,16 +45,6 @@ services:
       - "4041:4040"             # Spark UI for jupyter (different port to avoid conflict)
     environment:
       - JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
-    command: >
-      bash -c "
-        /opt/venv/bin/jupyter notebook
-          --ip=0.0.0.0
-          --port=8888
-          --no-browser
-          --allow-root
-          --NotebookApp.token=''
-          --NotebookApp.password=''
-          --notebook-dir=/workspace/code
-      "
+    command: bash -c "/opt/venv/bin/jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root --NotebookApp.token='' --NotebookApp.password='' --notebook-dir=/workspace/code"
     depends_on:
       - spark

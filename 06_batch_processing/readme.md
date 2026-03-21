@@ -1,87 +1,150 @@
-# Docker Setup Guide
+# Batch Processing with PySpark — Homework 6
 
-## Setup Steps
+## Overview
 
-1. Create the `Dockerfile`
-2. Create the `docker-compose.yaml`
-3. Write `test_script.py` to verify everything is working correctly
+This homework covers **batch processing** using Apache Spark and PySpark inside a Docker container.
+Since the course instructor uses Linux and this setup runs on Windows, Docker is used to create
+an identical Linux environment locally.
 
-## Activating the Setup
-
-1. Change into the code directory
-2. Start the local Docker app
-3. Run the following Docker commands:
-
-| Command | Description |
-|---|---|
-| `docker-compose up -d` | Build and start the container |
-| `docker-compose ps` | Check if the container is running |
-| `docker-compose exec spark python test_spark.py` | Test Python with Spark |
-| `docker-compose exec spark /bin/bash` | Overrides python entrypoint on docker to bash|
-| `docker-compose run --rm spark python your_homework_script.py` | From the host machine (windows) |
-| `python your_homework_script.py` | From inside bash |
-| `docker-compose down` | To stop the container |
-| `jupyter notebook --ip=0.0.0.0 --port=8888 --no-browser --allow-root` | Once in bash, to start jupyter |
-| `docker-compose run --rm -p 8888:8888 spark` | Start juypter with port mapping |
-| `docker-compose down` | Stop everything when done for the day |
+**Dataset:** NYC Yellow Taxi trip data — November 2025  
+**Engine:** Apache Spark 4.1.1  
+**Environment:** Ubuntu 22.04 inside Docker
 
 ---
 
-> Since we are using juypter to run pyspark commands 
+## Project Structure
 
-In docker-compose I have defined three services:
-*Spark service*
-    ```powershell
-    # Start the spark service in background
-    docker-compose up -d spark
+```
+06_batch_processing/
+├── .devcontainer/
+│   └── devcontainer.json       # VS Code Dev Container config
+├── code/
+│   └── test_spark.py           # Verifies Spark is working correctly
+├── docker-compose.yml          # Defines spark + jupyter services
+├── README.md
+└── setup/
+    └── Dockerfile              # Builds the Ubuntu + Java + Python image
+```
 
-    # Get into bash
-    docker-compose exec spark bash
+---
 
-    # Run your scripts
-    python test_spark.py
+## Prerequisites
 
-    # When done
-    docker-compose down
-    ```
+Before starting, make sure you have installed:
 
-*Jupyter service*
-   ```powershell
-    # Start Jupyter directly
-    docker-compose up jupyter
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) (and that it is running)
+- [VS Code](https://code.visualstudio.com/) with the **Dev Containers** extension
+- Git (with line endings configured — see Lessons Learned below)
 
-    # Or run in background
-    docker-compose up -d jupyter
+---
 
-    # Access at http://localhost:8888
+## Services
 
-    # Stop when done
-    docker-compose down
-   ```
-*Spark shell (REPL)*
-    ```powershell 
-    # Start Python interactive shell
-    docker-compose up spark-shell
+This project defines two Docker services in `docker-compose.yml`:
 
-    # You'll get a Python REPL where you can:
-    # >>> from pyspark.sql import SparkSession
-    # >>> spark = SparkSession.builder.master("local[*]").appName('test').getOrCreate()
-    # >>> df = spark.range(10)
-    # >>> df.show()
-    ```
-## Errors Encountered During Docker Configuration
+| Service | Purpose | Port |
+|---|---|---|
+| `spark` | VS Code Dev Container — run scripts here | 4040 (Spark UI) |
+| `jupyter` | Browser-based notebook interface | 8888 |
+
+---
+
+## Setup Steps
+
+1. Clone or create the project folder
+2. Create `setup/Dockerfile`
+3. Create `docker-compose.yml`
+4. Place your scripts in the `code/` folder
+5. Start Docker Desktop
+
+---
+
+## Running the Environment
+
+### Option A — VS Code Dev Container (recommended)
+
+```powershell
+# 1. Open the project in VS Code
+# 2. Press Ctrl+Shift+P → "Reopen in Container"
+# VS Code will build the image and connect automatically
+```
+
+### Option B — Terminal (spark service)
+
+```powershell
+# Build the image (only needed after Dockerfile changes)
+docker-compose build --no-cache
+
+# Start the spark container in the background
+docker-compose up -d spark
+
+# Verify it is running
+docker-compose ps
+
+# Open a terminal inside the container
+docker-compose exec spark bash
+
+# Run your scripts from inside the container
+python test_spark.py
+
+# Stop the container when done
+docker-compose down
+```
+
+### Option C — Jupyter Notebook in browser
+
+```powershell
+# Start the Jupyter service
+docker-compose up -d jupyter
+
+# Open in browser
+# http://localhost:8888
+
+# Stop when done
+docker-compose down
+```
+
+---
+
+## Common Commands Reference
+
+| Command | Description |
+|---|---|
+| `docker-compose build --no-cache` | Rebuild the image from scratch |
+| `docker-compose up -d` | Start all services in the background |
+| `docker-compose up -d spark` | Start only the spark service |
+| `docker-compose up -d jupyter` | Start only the jupyter service |
+| `docker-compose ps` | Check which containers are running |
+| `docker-compose logs jupyter` | See output/errors from a service |
+| `docker-compose exec spark bash` | Open a terminal inside the spark container |
+| `docker-compose exec spark python test_spark.py` | Run a script directly |
+| `docker-compose down` | Stop and remove all containers |
+
+---
+
+## Homework Questions & Answers
+
+| # | Question | Answer |
+|---|---|---|
+| Q1 | Install Spark and PySpark | ✅ Spark 4.1.1 running via Docker |
+| Q2 | Size of Yellow Taxi Nov 2025 in Spark | **75 MB** (68.4 MiB in memory) |
+| Q3 | Count records on November 15 2025 | **162,604** |
+| Q4 | Longest trip duration (hours) | **90.6** |
+| Q5 | Spark UI default port | **4040** |
+| Q6 | Least frequent pickup zone | **Governor's Island/Ellis Island/Liberty Island** |
+
+---
+
+## Errors Encountered
 
 ### 1. Obsolete `version` attribute warning
 
 **Error:**
 ```
-level=warning msg="docker-compose.yml: the attribute `version` is obsolete,
-it will be ignored, please remove it to avoid potential confusion"
+level=warning msg="docker-compose.yml: the attribute `version` is obsolete"
 ```
-
-**Cause:** Recent versions of Docker Compose (V2) have moved to the Compose Specification format, making the `version` field obsolete.
-
-**Fix:** Comment out the `version` field — kept for reference.
+**Cause:** Docker Compose V2 no longer uses the `version` field.  
+**Fix:** Remove the `version:` line from `docker-compose.yml`.
 
 ---
 
@@ -91,13 +154,90 @@ it will be ignored, please remove it to avoid potential confusion"
 ```
 failed to solve: failed to read dockerfile: open Dockerfile: no such file or directory
 ```
+**Cause:** `build: .` looks for a `Dockerfile` in the same folder as `docker-compose.yml`.  
+**Fix:** Use `build.context` and `build.dockerfile` to point explicitly to `setup/Dockerfile`.
 
-**Cause:** `build: .` in `docker-compose.yml` looks for a `Dockerfile` in the same directory as the compose file.
+---
 
-**Fix:** Updated the build context to point to the directory containing the `Dockerfile`.
+### 3. Jupyter container exits immediately
+
+**Error:**
+```
+bash: --ip=0.0.0.0: command not found
+```
+**Cause:** YAML multiline `>` block splits each flag onto a separate line, so bash receives
+each flag as a standalone command instead of as arguments to jupyter.  
+**Fix:** Write the entire jupyter command on a single line inside `bash -c "..."`.
+
+---
+
+### 4. Port conflict — two services on 8888
+
+**Error:** One of the services silently fails to start.  
+**Cause:** Two services cannot bind to the same host port at the same time.  
+**Fix:** Only `jupyter` uses `8888:8888`. The `spark` service uses `4040:4040` only.
+
+---
+
+### 5. Service not running on exec
+
+**Error:**
+```
+service "spark" is not running
+```
+**Cause:** `docker-compose exec` requires the container to already be running.
+`docker-compose build` creates the image but does NOT start the container.  
+**Fix:** Always run `docker-compose up -d` before `docker-compose exec`.
 
 ---
 
 ## Lessons Learned
 
-> **Consistency matters** — make sure the working directory is the same across your `Dockerfile` and `docker-compose.yml`. Mixing `/app` in one and `/workspace` in the other will cause issues.
+> **Build ≠ Run.** `docker-compose build` creates the image. `docker-compose up` starts the container.
+> You need both before you can exec into a service.
+
+> **Consistency matters.** Make sure the working directory is the same across `Dockerfile`
+> and `docker-compose.yml`. Mixing `/app` in one and `/workspace` in the other causes path issues.
+
+> **Ports must be unique.** Each host port can only be used by one container at a time.
+> If two services need the same internal port (e.g. 4040), map them to different host ports
+> (e.g. `4040:4040` and `4041:4040`).
+
+> **Windows line endings.** Git on Windows converts line endings (LF → CRLF) which can break
+> scripts running inside Linux containers. Fix once with:
+> ```
+> git config --global core.autocrlf false
+> ```
+
+> **Spark UI (port 4040) is only live during active jobs.** If no Spark job is running,
+> the page returns an empty response. This is normal behaviour.
+
+> **Parquet files expand in memory.** A 68 MB Parquet file loaded into Spark occupies ~222 MB
+> in memory. Parquet is compressed on disk — Spark decompresses it when loading.
+
+The directory Tree
+
+    ├── 06_batch_processing
+    │   ├── .devcontainer
+    │   │   └── devcontainer.json
+    │   ├── code
+    │   │   ├── .ipynb_checkpoints
+    │   │   │   ├── batch_homework-checkpoint.ipynb
+    │   │   │   └── test_spark-checkpoint.py
+    │   │   ├── zones
+    │   │   │   ├── .ipynb_checkpoints
+    │   │   │   │   └── _SUCCESS-checkpoint
+    │   │   │   ├── ._SUCCESS.crc
+    │   │   │   ├── .part-00000-b0126063-7020-4f2f-832f-8b9e708b1bc2-c000.snappy.parquet.crc
+    │   │   │   ├── _SUCCESS
+    │   │   │   └── part-00000-b0126063-7020-4f2f-832f-8b9e708b1bc2-c000.snappy.parquet
+    │   │   ├── batch_homework.ipynb
+    │   │   ├── batch_homework.py
+    │   │   ├── taxi_zone_lookup.csv
+    │   │   ├── test_spark.py
+    │   │   └── yellow_tripdata_2025-11.parquet
+    │   ├── setup
+    │   │   └── Dockerfile
+    │   ├── .gitignore
+    │   ├── docker-compose.yml
+    │   └── readme.md
